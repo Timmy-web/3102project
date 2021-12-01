@@ -80,64 +80,81 @@ const Login: React.FC = function () {
                 }
             }
         }
-
     }
+
+
     function login() {
         const read = localStorage.getItem('data');
         var isLogin: boolean = false;
         if (read) {
             const obj = JSON.parse(read) as User;
-            for (var i = 0; i < JSON.parse(read).length; i++) {
-                if (obj[i].Username == log.LoginUser && obj[i].Password == enc.Hex.stringify(SHA256(log.LoginPassword))) {
-                    var logtime: string = new Date().toTimeString();
-                    var status = { UserInfo: obj[i], LoginTime: logtime }
-                    localStorage.setItem('status', JSON.stringify(status));
-                    obj[i].Last_Login = logtime;
-                    alert("Login successfully")
-                    isLogin = true;
+            if (log.LoginUser == "admin" && log.LoginPassword == "admin") {
+                alert("Welcome admin, user data will be show in this page.")
+                var print_data = JSON.stringify(obj, null, 2)
+                document.getElementById("print").innerHTML = print_data
+                const x = document.getElementById("frame") as HTMLElement
+                x.style.display = "none"
+            } else {
+                for (var i = 0; i < JSON.parse(read).length; i++) {
+                    if (obj[i].Username == log.LoginUser && obj[i].Password == enc.Hex.stringify(SHA256(log.LoginPassword))) {
+                        var logtime: string = new Date().toTimeString();
+                        var status = { UserInfo: obj[i], LoginTime: logtime }
+                        localStorage.setItem('status', JSON.stringify(status));
+                        obj[i].Last_Login = logtime;
+                        alert("Login successfully")
+                        isLogin = true;
+                    }
+                }
+                localStorage.setItem('data', JSON.stringify(obj));
+                if (isLogin == false) {
+                    alert("Username or password invalid")
                 }
             }
-            localStorage.setItem('data', JSON.stringify(obj));
-            if (isLogin == false) {
-                alert("Username or password invalid")
-            }
         } else {
-            alert("User not found")
+            if (log.LoginUser == "admin" && log.LoginPassword == "admin") {
+                alert("Welcome admin, there is no user data.")
+            } else {
+                alert("User not found")
+            }
         }
     }
     function clear() {//for you to clear the data
         localStorage.removeItem('data');
+        localStorage.removeItem('status');
         data_arr = [];
         console.log('Data is cleared');
     }
 
     return (
         <div>
-            <div className="register">
-                Username: <input value={data.Username} onChange={x => setData({ ...data, Username: x.target.value })} />
-                <br />
-                Password: <input type="password" value={data.Password} onChange={x => setData({ ...data, Password: x.target.value })} />
-                <br />
-                Are you study in HSU?:
-                <label><input type="radio" name="isHSUStudent" value="true" onChange={x => setData({ ...data, isHSUStudent: x.target.value })} />Yes</label>
-                <label><input type="radio" name="isHSUStudent" value="false" onChange={x => setData({ ...data, isHSUStudent: x.target.value })} />No</label>
-                <br />
-                {data.isHSUStudent == "true" &&
-                    <div>Student ID: <input value={data.StudentID} onChange={x => setData({ ...data, StudentID: x.target.value })} />
-                        <br />
-                        Programme of the student: <input value={data.Program} onChange={x => setData({ ...data, Program: x.target.value })} />
-                        <br />
-                        Year of entrance: <input value={data.Entrance_year} onChange={x => setData({ ...data, Entrance_year: x.target.value })} />
-                        <br /></div>}
-                <button onClick={register}>Sign Up</button>
-                <button onClick={clear}>Clear local storage</button>
-            </div>
-            <div className="login">
-                Username: <input value={log.LoginUser} onChange={x => setStatus({ ...log, LoginUser: x.target.value })} />
-                <br />
-                Password: <input type="password" value={log.LoginPassword} onChange={x => setStatus({ ...log, LoginPassword: x.target.value })} />
-                <br />
-                <button onClick={login}>Sign In</button>
+            <div id="print" style={{ whiteSpace: "break-spaces" }}></div>
+            <div id="frame">
+                <div className="register">
+                    Username: <input value={data.Username} onChange={x => setData({ ...data, Username: x.target.value })} />
+                    <br />
+                    Password: <input type="password" value={data.Password} onChange={x => setData({ ...data, Password: x.target.value })} />
+                    <br />
+                    Are you study in HSU?:
+                    <label><input type="radio" name="isHSUStudent" value="true" onChange={x => setData({ ...data, isHSUStudent: x.target.value })} />Yes</label>
+                    <label><input type="radio" name="isHSUStudent" value="false" onChange={x => setData({ ...data, isHSUStudent: x.target.value })} />No</label>
+                    <br />
+                    {data.isHSUStudent == "true" &&
+                        <div>Student ID: <input value={data.StudentID} onChange={x => setData({ ...data, StudentID: x.target.value })} />
+                            <br />
+                            Programme of the student: <input value={data.Program} onChange={x => setData({ ...data, Program: x.target.value })} />
+                            <br />
+                            Year of entrance: <input value={data.Entrance_year} onChange={x => setData({ ...data, Entrance_year: x.target.value })} />
+                            <br /></div>}
+                    <button onClick={register}>Sign Up</button>
+                    <button onClick={clear}>Clear local storage</button>
+                </div>
+                <div className="login">
+                    Username: <input value={log.LoginUser} onChange={x => setStatus({ ...log, LoginUser: x.target.value })} />
+                    <br />
+                    Password: <input type="password" value={log.LoginPassword} onChange={x => setStatus({ ...log, LoginPassword: x.target.value })} />
+                    <br />
+                    <button onClick={login}>Sign In</button>
+                </div>
             </div>
         </div>
     );
